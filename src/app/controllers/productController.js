@@ -5,6 +5,7 @@ const slugify = require("slugify");
 // const upload = multer({
 //   dest: "public/Product_Image",
 // });
+//new
 exports.getAllProducts = async (req, res, next) => {
   try {
     const products = await Product.find({ isDeleted: false })
