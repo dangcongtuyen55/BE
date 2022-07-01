@@ -7,10 +7,27 @@ const slugify = require("slugify");
 // });
 exports.getAllProducts = async (req, res, next) => {
   try {
+    const products = await Product.find({ isDeleted: false })
+      .populate("createBy", "name")
+      .select(
+        "name slug price  description rating offer stock reviews createBy product_url createdAt isDeleted"
+      );
+    res.status(200).json({
+      status: "success",
+      results: products.length,
+      products,
+    });
+  } catch (error) {
+    next(error);
+    // res.json(error);
+  }
+};
+exports.getAllProductsDisplay = async (req, res, next) => {
+  try {
     const products = await Product.find()
       .populate("createBy", "name")
       .select(
-        "name slug price  description rating offer stock reviews createBy product_url createdAt"
+        "name slug price  description rating offer stock reviews createBy product_url createdAt isDeleted"
       );
     res.status(200).json({
       status: "success",
@@ -82,7 +99,7 @@ exports.deleteProduct = async (req, res, next) => {
   try {
     const { userId } = req.user;
     const { id } = req.params;
-    await Product.findByIdAndDelete(id);
+    const product = await Product.findByIdAndDelete(id, { isDeleted: true });
     res.status(200).json({
       status: "success",
       message: "Product deleted successfully",

@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema({
       // required: true,
     },
 
-    phoneNo: {
+    phone: {
       type: Number,
       // required: true,
     },
@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         // required: true,
       },
-      image: {
+      product_url: {
         type: String,
         // required: true,
       },
@@ -37,10 +37,9 @@ const orderSchema = new mongoose.Schema({
       },
     },
   ],
-  user: {
-    type: mongoose.Schema.ObjectId,
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    // required: true,
   },
   paymentInfo: {
     id: {
@@ -56,7 +55,7 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     // required: true,
   },
-  itemsPrice: {
+  Subtotal: {
     type: Number,
     // required: true,
     default: 0,
@@ -66,12 +65,12 @@ const orderSchema = new mongoose.Schema({
     // required: true,
     default: 0,
   },
-  shippingPrice: {
+  shippingFee: {
     type: Number,
     // required: true,
     default: 0,
   },
-  totalPrice: {
+  Amount: {
     type: Number,
     // required: true,
     default: 0,

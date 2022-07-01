@@ -35,11 +35,15 @@ exports.NewOrder = async (req, res, next) => {
   // }
   //aaaaaa
   try {
-    // const { userId } = req.user;
+    const { userId } = req.user;
+    console.log("TCL: exports.NewOrder -> userId", userId);
 
     const orders = await Order.create({
       ...req.body,
+      customer: userId,
     });
+    console.log("TCL: exports.NewOrder -> orders", orders);
+
     const subject = "con me may!";
     await mailer.sendMail(subject, orders);
     res.status(200).json({
@@ -48,5 +52,40 @@ exports.NewOrder = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.getSingleOrder = async (req, res, next) => {
+  try {
+    // const { userId } = req.user;
+    // const { id } = req.params;
+    // const order = await Order.findById(id).populate("user", "name email");
+    // res.status(200).json({
+    //   success: true,
+    //   order,
+    // });
+    const { id } = req.params;
+    console.log(id);
+    const order = await Order.findById(id);
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
+exports.myOrder = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const orders = await Order.find({ customer: userId });
+    // console.log("TCL: exports.myOrder -> user", user);
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    res.json(error);
   }
 };
