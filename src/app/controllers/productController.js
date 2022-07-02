@@ -96,6 +96,26 @@ exports.updateProduct = async (req, res, next) => {
     next(error);
   }
 };
+// exports.deleteProduct = async (req, res, next) => {
+//   try {
+//     const { userId } = req.user;
+//     const { id } = req.params;
+//     await Product.findByIdAndUpdate(id, { isDeleted: true });
+//     res.status(200).json({
+//       status: "success",
+//       message: "Product deleted successfully",
+//       deleteBy: userId,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+//   // const product = await Product.findByIdAndDelete(req.params.id);
+//   // res.status(200).json({
+//   //   success: true,
+//   //   message: "Product deleted successfully",
+//   // });
+// };
+
 exports.deleteProduct = async (req, res, next) => {
   try {
     const { userId } = req.user;
@@ -114,4 +134,24 @@ exports.deleteProduct = async (req, res, next) => {
   //   success: true,
   //   message: "Product deleted successfully",
   // });
+};
+
+exports.restoreProduct = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const { id } = req.params;
+    // await Product.findByIdAndUpdate(id, { isDeleted: false });
+    const products = await Product.findByIdAndUpdate(id, {
+      ...req.body,
+      restoreBy: userId,
+      isDeleted: false,
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Product restore successfully",
+      products,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
