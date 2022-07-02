@@ -160,6 +160,9 @@ exports.createReview = async (req, res, next) => {
   try {
     const { rating, comment } = req.body;
     const { id } = req.params;
+    // const { userId } = req.user;
+    // const { userName } = req.user.name;
+
     const review = {
       user: req.user._id,
       name: req.user.name,
@@ -177,8 +180,21 @@ exports.createReview = async (req, res, next) => {
       product.rating =
         product.reviews.reduce((acc, item) => item.rating + acc, 0) /
         product.reviews.length;
+      // res.status(200).json({
+      //   status: "success",
+      //   message: "Add reviews successfully",
+      //   product,
+      // });
+      await product.save();
+      res.status(200).json({
+        status: "success",
+        message: "Add reviews successfully",
+        product,
+      });
     } else {
-      res.status(404);
+      message = "error";
     }
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };

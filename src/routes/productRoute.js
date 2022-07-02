@@ -21,8 +21,8 @@ Router.route("/new").post(verifyToken, createProduct);
 Router.route("/product/:id")
   .put(verifyToken, updateProduct)
   .delete(verifyToken, deleteProduct)
-  .delete(verifyToken, restoreProduct)
   .get(getProductDetail);
-Router.route("/product/:id/review").post(verifyToken, createReview);
+Router.route("/restore/:id").delete(verifyToken, restoreProduct);
+Router.route("/review/:id").post(verifyToken, createReview);
 
 module.exports = Router;
