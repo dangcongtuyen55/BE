@@ -16,6 +16,21 @@ exports.getAllBanners = async (req, res, next) => {
   }
 };
 
+exports.getBannerDetail = async (req, res, next) => {
+  try {
+    // const id = req.params.id;
+    const { id } = req.params;
+    console.log(id);
+    const banner = await Banner.findById(id);
+    res.status(200).json({
+      success: true,
+      banner,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createBanner = async (req, res, next) => {
   try {
     const { userId } = req.user;

@@ -10,6 +10,7 @@ const {
   deleteProduct,
   getProductDetail,
   restoreProduct,
+  createReview,
 } = require("../app/controllers/productController");
 
 const Router = express.Router();
@@ -22,5 +23,6 @@ Router.route("/product/:id")
   .delete(verifyToken, deleteProduct)
   .delete(verifyToken, restoreProduct)
   .get(getProductDetail);
+Router.route("/product/:id/review").post(verifyToken, createReview);
 
 module.exports = Router;

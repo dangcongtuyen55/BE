@@ -155,3 +155,30 @@ exports.restoreProduct = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.createReview = async (req, res, next) => {
+  try {
+    const { rating, comment } = req.body;
+    const { id } = req.params;
+    const review = {
+      user: req.user._id,
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+    };
+
+    const product = await Product.findById(id);
+    if (product) {
+      const alreadyReviewed = product.reviews.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
+      product.reviews.push(review);
+      product.numOfReviews = product.reviews.length;
+      product.rating =
+        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+        product.reviews.length;
+    } else {
+      res.status(404);
+    }
+  } catch (error) {}
+};
