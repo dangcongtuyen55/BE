@@ -5,15 +5,17 @@ const {
   getAllBanners,
   createBanner,
   updateBanner,
-  deleteBanner,
+  deleteOneBanner,
+  restoreOneBanner,
 } = require("../app/controllers/bannerController");
 
 const Router = express.Router();
 
 Router.route("/banners").get(getAllBanners);
-Router.route("/new").post(verifyToken, createBanner);
+Router.route("/banners/new").post(verifyToken, createBanner);
 Router.route("/banner/:id")
   .put(verifyToken, updateBanner)
-  .delete(verifyToken, deleteBanner);
+  .delete(verifyToken, deleteOneBanner);
+Router.route("/restore/banner/:id").delete(verifyToken, restoreOneBanner);
 
 module.exports = Router;

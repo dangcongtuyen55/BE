@@ -24,7 +24,7 @@ app.use(express.json());
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/", productRoute);
-app.use("/api/v1/", bannerRoute);
+app.use("/api/v1", bannerRoute);
 app.use("/api/v1/catagory", catagoryRoute);
 app.use("/api/v1/", orderRoute);
 

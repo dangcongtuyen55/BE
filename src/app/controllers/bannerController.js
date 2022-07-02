@@ -41,7 +41,7 @@ exports.updateBanner = async (req, res, next) => {
     console.log(req.params);
     const banners = await Banner.findByIdAndUpdate(
       id,
-      { ...req.body, updateBy: userId, slug: slugify(req.body.name) },
+      { ...req.body, updateBy: userId },
       { new: true, runValidator: true }
     );
     console.log(banners);
@@ -51,19 +51,55 @@ exports.updateBanner = async (req, res, next) => {
         banners,
       },
     });
+    console.log(banners);
   } catch (error) {
     next(error);
   }
 };
-exports.deleteBanner = async (req, res, next) => {
+// exports.deleteBanner = async (req, res, next) => {
+//   try {
+//     const { userId } = req.user;
+//     const { id } = req.params;
+//     await banner.findByIdAndDelete(id);
+//     res.status(200).json({
+//       status: "success",
+//       message: "Banner deleted successfully",
+//       deleteBy: userId,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+exports.deleteOneBanner = async (req, res, next) => {
   try {
     const { userId } = req.user;
     const { id } = req.params;
-    await banner.findByIdAndDelete(id);
+    await Banner.findByIdAndUpdate(id, { isDeleted: true });
     res.status(200).json({
       status: "success",
       message: "Banner deleted successfully",
       deleteBy: userId,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.restoreOneBanner = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const { id } = req.params;
+    // await Product.findByIdAndUpdate(id, { isDeleted: false });
+    const banners = await Banner.findByIdAndUpdate(id, {
+      ...req.body,
+      restoreBy: userId,
+      isDeleted: false,
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Banner restore successfully",
+      banners,
     });
   } catch (error) {
     next(error);
