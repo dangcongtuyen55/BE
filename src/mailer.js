@@ -6,6 +6,7 @@ const path = require("path");
 const mailHost = "smtp.gmail.com";
 const mailPort = 587;
 const dotenv = require("dotenv");
+const Order = require("./app/models/Order");
 dotenv.config();
 
 const OAuth2 = google.auth.OAuth2;
@@ -27,8 +28,7 @@ const accessToken = new Promise((resovle, reject) => {
   });
 });
 
-const sendMail = (subject, orders) => {
-  console.log("TCL: sendMail -> orders", orders);
+const sendMail = (user, subject, orders) => {
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     host: mailHost,
@@ -43,6 +43,7 @@ const sendMail = (subject, orders) => {
       refreshToken: process.env.REFRESH_TOKEN,
     },
   });
+  console.log(orders);
 
   const handlebarOptions = {
     viewEngine: {
@@ -53,18 +54,61 @@ const sendMail = (subject, orders) => {
     viewPath: path.resolve("./src/views"),
     extName: ".handlebars",
   };
-
   transporter.use("compile", hbs(handlebarOptions));
 
+  const listItems = orders.orderItems.map((item) => {
+    return {
+      name: item.name,
+      price: item.price,
+      product_url: item.product_url,
+      quantity: item.quantity,
+      product_id: item.product,
+      id: item._id,
+    };
+  });
+  console.log(listItems);
+
+  // const htmlHead =
+  //   '<table style="width:50%">' +
+  //   '<tr style="border: 1px solid black;"><th style="border: 1px solid black;">Tên Sản Phẩm</th><th style="border: 1px solid black;">Hình Ảnh</th><th style="border: 1px solid black;">Giá</th><th style="border: 1px solid black;">Số Lượng</th><th style="border: 1px solid black;">Thành Tiền</th>';
+
+  // let htmlContent = "";
+
+  // for (let i = 0; i < orders.orderItems.length; i++) {
+  //   htmlContent +=
+  //     "<tr>" +
+  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+  //     orders.orderItems[i].name +
+  //     "</td>" +
+  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;"><img src="' +
+  //     orders.orderItems[i].product_url +
+  //     '" width="80" height="80"></td>' +
+  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+  //     orders.orderItems[i].price +
+  //     "$</td>" +
+  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+  //     orders.orderItems[i].quantity +
+  //     "</td>" +
+  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+  //     parseInt(orders.orderItems[i].price) *
+  //       parseInt(orders.orderItems[i].quantity) +
+  //     "$</td><tr>";
+  // }
+  console.log(orders.orderItems);
   const options = {
     from: "tuyendev55@gmail.com",
-    to: "ctuyenhddt@gmail.com",
+    to: user.email,
     subject: subject,
     template: "email",
     context: {
       orderStatus: orders.orderStatus,
       itemsPrice: orders.itemsPrice,
+      shippingInfo: orders.shippingInfo,
+      list: orders.orderItems,
+      itemProduct: orders.orderItems.length,
     },
+
+    // html: htmlContent,
   };
 
   return transporter.sendMail(options, function (err, res) {

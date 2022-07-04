@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-exports.verifyToken = (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
   //Access Authorization from req header
 
   const Authorization = req.header("authorization");
@@ -19,6 +20,8 @@ exports.verifyToken = (req, res, next) => {
   //verify token
 
   const { userId } = jwt.verify(token, process.env.APP_SECRET);
+  // const decodedData = jwt.verify(token, process.env.APP_SECRET);
+  // req.user = await User.findById(decodedData.id);
 
   //Assign req
 

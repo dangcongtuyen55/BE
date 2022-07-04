@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const slugify = require("slugify");
+const User = require("../models/User");
 // const multer = requried("multer");
 
 // const upload = multer({
@@ -159,41 +160,74 @@ exports.restoreProduct = async (req, res, next) => {
 exports.createReview = async (req, res, next) => {
   try {
     const { rating, comment } = req.body;
+    console.log(req.body);
     const { id } = req.params;
-    // const { userId } = req.user;
-    // const { userName } = req.user.name;
+    const { userId } = req.user;
+    const user = await User.findOne({ _id: userId });
+    // const name = req.user;
 
     const review = {
-      user: req.user._id,
-      name: req.user.name,
+      user: userId,
+      name: user.name,
       rating: Number(rating),
       comment,
     };
-
+    console.log("TCL: exports.createReview ->  user.name", user.name);
     const product = await Product.findById(id);
-    if (product) {
-      const alreadyReviewed = product.reviews.find(
-        (r) => r.user.toString() === req.user._id.toString()
-      );
-      product.reviews.push(review);
-      product.numOfReviews = product.reviews.length;
-      product.rating =
-        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-        product.reviews.length;
-      // res.status(200).json({
-      //   status: "success",
-      //   message: "Add reviews successfully",
-      //   product,
-      // });
-      await product.save();
-      res.status(200).json({
-        status: "success",
-        message: "Add reviews successfully",
-        product,
+
+    const isReviewed = product.reviews.find(
+      (review) => review.user === req.user._id
+    );
+
+    if (isReviewed) {
+      product.reviews.forEach((rev) => {
+        if (rev.user === req.user._id)
+          (rev.rating = rating), (rev.comment = comment);
       });
     } else {
-      message = "error";
+      product.reviews.push(review);
+      product.numOfReviews = product.reviews.length;
     }
+
+    let avg = 0;
+
+    product.reviews.forEach((rev) => {
+      avg += rev.rating;
+    });
+
+    product.rating = avg / product.reviews.length;
+
+    await product.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+
+    // const product = await Product.findById(id);
+    // if (product) {
+    //   const alreadyReviewed = product.reviews.find(
+    //     (r) => r.user.toString() === req.user._id.toString()
+    //   );
+    //   product.reviews.push(review);
+    //   product.numOfReviews = product.reviews.length;
+    //   product.rating =
+    //     product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+    //     product.reviews.length;
+    //   // res.status(200).json({
+    //   //   status: "success",
+    //   //   message: "Add reviews successfully",
+    //   //   product,
+    //   // });
+    //   await product.save();
+    //   res.status(200).json({
+    //     status: "success",
+    //     message: "Add reviews successfully",
+    //     product,
+    //   });
+    // } else {
+    //   message = "error";
+    // }
   } catch (error) {
     next(error);
   }

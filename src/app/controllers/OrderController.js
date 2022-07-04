@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const mailer = require("../../mailer");
+const User = require("../models/User");
 exports.NewOrder = async (req, res, next) => {
   // try {
   //   const {
@@ -36,16 +37,14 @@ exports.NewOrder = async (req, res, next) => {
   //aaaaaa
   try {
     const { userId } = req.user;
-    console.log("TCL: exports.NewOrder -> userId", userId);
 
     const orders = await Order.create({
       ...req.body,
-      customer: userId,
+      user: userId,
     });
-    console.log("TCL: exports.NewOrder -> orders", orders);
-
+    const user = await User.findOne({ _id: userId });
     const subject = "con me may!";
-    await mailer.sendMail(subject, orders);
+    await mailer.sendMail(user, subject, orders);
     res.status(200).json({
       status: "success",
       orders,
@@ -66,7 +65,7 @@ exports.getSingleOrder = async (req, res, next) => {
     // });
     const { id } = req.params;
     console.log(id);
-    const order = await Order.findById(id);
+    const order = await Order.findById(id).populate("user", "name email");
     res.status(200).json({
       success: true,
       order,
@@ -78,7 +77,7 @@ exports.getSingleOrder = async (req, res, next) => {
 exports.myOrder = async (req, res, next) => {
   try {
     const { userId } = req.user;
-    const orders = await Order.find({ customer: userId });
+    const orders = await Order.find({ user: userId });
     // console.log("TCL: exports.myOrder -> user", user);
 
     res.status(200).json({

@@ -37,10 +37,20 @@ const orderSchema = new mongoose.Schema({
       },
     },
   ],
-  customer: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+
+  // custormerInfo: {
+  //   customerId: {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "User",
+  //   },
+  //   customerName: {
+  //     type: String,
+  //   },
+  // },
   paymentInfo: {
     id: {
       type: String,

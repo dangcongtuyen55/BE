@@ -18,9 +18,10 @@ exports.login = async (req, res, next) => {
         user: {
           token,
           email: user.email,
-          userName: user.name,
+          name: user.name,
           role: user.role,
         },
+        // user,
       });
     } else {
       //Error: password is not correct
