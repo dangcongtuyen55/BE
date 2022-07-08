@@ -104,9 +104,9 @@ const productSchema = new mongoose.Schema(
     //   ref: "User",
     //   required: true,
     // },
-    catagory: {
+    category: {
       type: String,
-      // required: true,
+      required: [true, "Please add a category of your product"],
     },
     type_product: {
       type: String,

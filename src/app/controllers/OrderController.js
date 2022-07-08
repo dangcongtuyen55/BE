@@ -88,3 +88,17 @@ exports.myOrder = async (req, res, next) => {
     res.json(error);
   }
 };
+exports.deleteAll = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const orders = await Order.deleteMany({ user: userId });
+    // console.log("TCL: exports.myOrder -> user", user);
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};

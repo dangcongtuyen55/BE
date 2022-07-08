@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const slugify = require("slugify");
 const User = require("../models/User");
+const Features = require("../../utils/Features");
 // const multer = requried("multer");
 
 // const upload = multer({
@@ -9,15 +10,20 @@ const User = require("../models/User");
 //new
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({ isDeleted: false })
-      .populate("createBy", "name")
-      .select(
-        "name slug price  description rating offer stock reviews createBy product_url createdAt isDeleted"
-      );
+    const resultPerPage = 12;
+
+    const productsCount = await Product.countDocuments();
+
+    const feature = new Features(Product.find({ isDeleted: false }), req.query)
+      .search()
+      .filter()
+      .pagination(resultPerPage);
+    const products = await feature.query;
     res.status(200).json({
-      status: "success",
-      results: products.length,
+      success: true,
       products,
+      productsCount,
+      resultPerPage,
     });
   } catch (error) {
     next(error);

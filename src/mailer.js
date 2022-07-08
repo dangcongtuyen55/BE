@@ -66,8 +66,12 @@ const sendMail = (user, subject, orders) => {
       id: item._id,
     };
   });
-  console.log(listItems);
-
+  // console.log(listItems);
+  const newDataList = {};
+  for (i = 0; i < orders.orderItems.length; i++) {
+    newDataList[i] = orders.orderItems[i];
+  }
+  console.log("TCL: sendMail -> newDataList", newDataList);
   // const htmlHead =
   //   '<table style="width:50%">' +
   //   '<tr style="border: 1px solid black;"><th style="border: 1px solid black;">Tên Sản Phẩm</th><th style="border: 1px solid black;">Hình Ảnh</th><th style="border: 1px solid black;">Giá</th><th style="border: 1px solid black;">Số Lượng</th><th style="border: 1px solid black;">Thành Tiền</th>';
@@ -94,7 +98,7 @@ const sendMail = (user, subject, orders) => {
   //       parseInt(orders.orderItems[i].quantity) +
   //     "$</td><tr>";
   // }
-  console.log(orders.orderItems);
+  // console.log(orders.orderItems);
   const options = {
     from: "tuyendev55@gmail.com",
     to: user.email,
@@ -104,7 +108,7 @@ const sendMail = (user, subject, orders) => {
       orderStatus: orders.orderStatus,
       itemsPrice: orders.itemsPrice,
       shippingInfo: orders.shippingInfo,
-      list: orders.orderItems,
+      list: newDataList,
       itemProduct: orders.orderItems.length,
     },
 

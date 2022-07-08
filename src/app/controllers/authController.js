@@ -72,7 +72,8 @@ exports.getCurrentUser = async (req, res, next) => {
 
 exports.getInfoUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
+    const { userId } = req.user;
+    const user = await User.findById(userId);
     res.status(200).json({
       status: "success",
       user: {
@@ -135,3 +136,83 @@ exports.updateInfoUser = async (req, res, next) => {
 //     message: "Logged Out",
 //   });
 // };
+
+exports.updatePassword = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const user = await User.findOne({ _id: userId });
+    if (user) {
+      if (bcrypt.compareSync(req.body.password, user.password)) {
+        if (!bcrypt.compareSync(req.body.new_password, user.password)) {
+          const hash = await bcrypt.hash(req.body.new_password, 10);
+          const newData = await User.findByIdAndUpdate(
+            user._id,
+            { password: hash },
+            { new: true, runValidator: true }
+          );
+          const token = jwt.sign(
+            { userId: newData._id },
+            process.env.APP_SECRET
+          );
+          res.status(200).json({
+            status: "success",
+            payload: "mật khẩu đổi thành công",
+            payload: {
+              token,
+              email: newData.email,
+              userName: newData.username,
+            },
+          });
+        } else {
+          res.status(200).json({
+            status: "success",
+            payload: "mật khẩu cũ và mới trùng nhau",
+          });
+        }
+      } else {
+        res.status(200).json({
+          status: "success",
+          payload: "Mật khẩu không đúng",
+        });
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateProfile = async (req, res, next) => {
+  try {
+    // const newUserData = {
+    //   name: req.body.name,
+    //   email: req.body.email,
+    // };
+    // const { userId } = req.user;
+    // const user = await User.findByIdAndUpdate(userId, newUserData, {
+    //   new: true,
+    //   runValidators: true,
+    //   useFindAndModify: false,
+    // });
+
+    // res.status(200).json({
+    //   success: true,
+    //   payload: "cập nhật thông tin thành công",
+    //   user,
+    // });
+
+    const { userId } = req.user;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { ...req.body },
+      { new: true, runValidator: true }
+    );
+    console.log(user);
+    res.status(200).json({
+      status: "success",
+
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -28,9 +28,11 @@
     <h2>Tổng đơn hàng của quý khách là {{Amount}}</h2>
     <h2>Tổng đơn hàng của quý khách là {{shippingInfo.address}}</h2>
     <h2>Tổng đơn hàng của quý khách là {{shippingInfo.phone}}</h2>
-    {{#each list as |index|}}
-      {{index.name}}
-    {{/each}}
+    {{#with list}}
+      {{#with this}}
+        name:{{this.name}}
+      {{/with}}
+    {{/with}}
     <h3>Quý Khách vui lòng đăng nhập vào website:<a
         href="http://localhost:3000/"
       >http://localhost:3000/</a>để kiểm tra đơn hàng.</h3>
