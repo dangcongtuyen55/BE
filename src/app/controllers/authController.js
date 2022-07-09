@@ -73,15 +73,17 @@ exports.getCurrentUser = async (req, res, next) => {
 exports.getInfoUser = async (req, res, next) => {
   try {
     const { userId } = req.user;
+    console.log(userId);
     const user = await User.findById(userId);
     res.status(200).json({
       status: "success",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.createdAt,
-      },
+      // user: {
+      //   _id: user._id,
+      //   name: user.name,
+      //   email: user.email,
+      //   createdAt: user.createdAt,
+      // },
+      user,
     });
   } catch (error) {
     res.json(error);
@@ -90,7 +92,8 @@ exports.getInfoUser = async (req, res, next) => {
 
 exports.updateInfoUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
+    const { userId } = req.user;
+    const user = await User.findOne({ _id: userId });
     const token = jwt.sign({ userId: user._id }, process.env.APP_SECRET);
     if (user) {
       user.name = req.body.name || req.body.name;
@@ -140,6 +143,7 @@ exports.updateInfoUser = async (req, res, next) => {
 exports.updatePassword = async (req, res, next) => {
   try {
     const { userId } = req.user;
+    console.log("TCL: exports.updatePassword -> userId", userId);
     const user = await User.findOne({ _id: userId });
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
@@ -183,35 +187,39 @@ exports.updatePassword = async (req, res, next) => {
 
 exports.updateProfile = async (req, res, next) => {
   try {
-    // const newUserData = {
-    //   name: req.body.name,
-    //   email: req.body.email,
-    // };
-    // const { userId } = req.user;
-    // const user = await User.findByIdAndUpdate(userId, newUserData, {
-    //   new: true,
-    //   runValidators: true,
-    //   useFindAndModify: false,
-    // });
-
-    // res.status(200).json({
-    //   success: true,
-    //   payload: "cập nhật thông tin thành công",
-    //   user,
-    // });
-
+    const newUserData = {
+      name: req.body.name,
+      email: req.body.email,
+    };
     const { userId } = req.user;
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { ...req.body },
-      { new: true, runValidator: true }
-    );
-    console.log(user);
-    res.status(200).json({
-      status: "success",
-
-      user,
+    const user = await User.findByIdAndUpdate(userId, newUserData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
     });
+
+    res.status(200).json({
+      success: true,
+      payload: "cập nhật thông tin thành công",
+      user,
+      newUserData,
+    });
+
+    // const { userId } = req.user;
+    // const user = await User.findOne({ _id: userId });
+    // const newData = await User.findByIdAndUpdate(
+    //   user._id,
+    //   { ...req.body },
+    //   { new: true, runValidator: true }
+    // );
+    // const token = jwt.sign({ userId: newData._id }, process.env.APP_SECRET);
+    // console.log(user);
+    // res.status(200).json({
+    //   status: "success",
+    //   token,
+    //   email: newData.email,
+    //   name: newData.name,
+    // });
   } catch (error) {
     next(error);
   }
