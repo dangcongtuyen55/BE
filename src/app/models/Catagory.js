@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const catagorySchema = new mongoose.Schema(
+const categorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -16,7 +16,10 @@ const catagorySchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
-
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     parentId: {
       type: String,
     },
@@ -24,4 +27,4 @@ const catagorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Catagory", catagorySchema);
+module.exports = mongoose.model("Category", categorySchema);

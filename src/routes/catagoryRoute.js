@@ -2,17 +2,17 @@ const express = require("express");
 const { verifyToken } = require("../app/middlewares/verifyToken");
 
 const {
-  getAllCatagories,
-  createCatagory,
-  updateCatagory,
-  deleteCatagory,
+  getAllCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 } = require("../app/controllers/catagoryController");
 
 const Router = express.Router();
 
-Router.route("/").get(getAllCatagories).post(verifyToken, createCatagory);
+Router.route("/all").get(getAllCategories).post(verifyToken, createCategory);
 Router.route("/:CatagoryId")
-  .put(verifyToken, updateCatagory)
-  .delete(verifyToken, deleteCatagory);
+  .put(verifyToken, updateCategory)
+  .delete(verifyToken, deleteCategory);
 
 module.exports = Router;

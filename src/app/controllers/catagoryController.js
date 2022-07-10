@@ -1,24 +1,22 @@
-const Catagory = require("../models/Catagory");
+const Category = require("../models/Catagory");
 const slugify = require("slugify");
 
-exports.getAllCatagories = async (req, res, next) => {
+exports.getAllCategories = async (req, res, next) => {
   try {
-    const catagories = await Catagory.find().populate("author");
+    const categories = await Category.find().populate("author", "name");
     res.status(200).json({
       status: "success",
-      results: catagories.length,
-      data: {
-        catagories,
-      },
+      results: categories.length,
+      categories,
     });
   } catch (error) {
-    res.json(error);
+    next(error);
   }
 };
-exports.createCatagory = async (req, res, next) => {
+exports.createCategory = async (req, res, next) => {
   try {
     const { userId } = req.user;
-    const catagories = await Catagory.create({
+    const categories = await Category.create({
       ...req.body,
       author: userId,
       slug: slugify(req.body.name),
@@ -26,7 +24,7 @@ exports.createCatagory = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: {
-        catagories,
+        categories,
       },
     });
   } catch (error) {
@@ -34,11 +32,11 @@ exports.createCatagory = async (req, res, next) => {
   }
 };
 
-exports.updateCatagory = async (req, res, next) => {
+exports.updateCategory = async (req, res, next) => {
   try {
-    const { catagoryId } = req.params;
-    const catagories = await Catagory.findByIdAndUpdate(
-      catagoryId,
+    const { categoryId } = req.params;
+    const categories = await Category.findByIdAndUpdate(
+      categoryId,
       { ...req.body },
       { new: true },
       { runValidator: true }
@@ -46,20 +44,20 @@ exports.updateCatagory = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: {
-        catagories,
+        categories,
       },
     });
   } catch (error) {
     next(error);
   }
 };
-exports.deleteCatagory = async (req, res, next) => {
+exports.deleteCategory = async (req, res, next) => {
   try {
-    const { catagoryId } = req.params;
-    await Catagory.findByIdAndDelete(catagoryId);
+    const { categoryId } = req.params;
+    await Category.findByIdAndDelete(categoryId);
     res.status(200).json({
       status: "success",
-      message: "Catagory deleted successfully",
+      message: "Category deleted successfully",
     });
   } catch (error) {
     next(error);
