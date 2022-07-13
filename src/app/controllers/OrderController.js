@@ -102,3 +102,57 @@ exports.deleteAll = async (req, res, next) => {
     res.json(error);
   }
 };
+
+//ADMIN
+
+exports.getAllOrders = async (req, res, next) => {
+  // const { userId } = req.user;
+  const orders = await Order.find()
+    .sort({ _id: -1 })
+    .populate("user", "name email");
+  // console.log("TCL: exports.myOrder -> user", user);
+
+  res.status(200).json(orders);
+};
+
+exports.deliveredOrder = async (req, res, next) => {
+  const { userId } = req.user;
+  const { id } = req.params;
+  const order = await Order.findById(id);
+  // console.log("TCL: exports.myOrder -> user", user);
+  if (order) {
+    order.isDelivered = true;
+    order.deliveredAt = Date.now();
+
+    const updateOrder = await order.save();
+    res.status(200).json({
+      success: true,
+      status: "success",
+      message: "Order delivered successfully",
+      deliveredBy: userId,
+    });
+  } else {
+    res.json(error);
+  }
+};
+
+exports.confirmedOrder = async (req, res, next) => {
+  const { userId } = req.user;
+  const { id } = req.params;
+  const order = await Order.findById(id);
+  // await Order.findByIdAndUpdate(id, { isOrdered: true });
+  if (order) {
+    order.isConfirmed = true;
+    order.confirmedAt = Date.now();
+
+    const updateOrder = await order.save();
+    res.status(200).json({
+      success: true,
+      status: "success",
+      message: "Order Confirmed successfully",
+      confirmBy: userId,
+    });
+  } else {
+    res.json(error);
+  }
+};

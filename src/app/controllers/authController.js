@@ -17,6 +17,7 @@ exports.login = async (req, res, next) => {
         status: "success",
         user: {
           token,
+          id: user._id,
           email: user.email,
           name: user.name,
           role: user.role,
@@ -71,23 +72,30 @@ exports.getCurrentUser = async (req, res, next) => {
 };
 
 exports.getInfoUser = async (req, res, next) => {
-  try {
-    const { userId } = req.user;
-    console.log(userId);
-    const user = await User.findById(userId);
-    res.status(200).json({
-      status: "success",
-      // user: {
-      //   _id: user._id,
-      //   name: user.name,
-      //   email: user.email,
-      //   createdAt: user.createdAt,
-      // },
-      user,
-    });
-  } catch (error) {
-    res.json(error);
-  }
+  // try {
+  //   const { userId } = req.user;
+  //   console.log(userId);
+  //   const user = await User.findById(userId);
+  //   res.status(200).json({
+  //     status: "success",
+  //     // user: {
+  //     //   _id: user._id,
+  //     //   name: user.name,
+  //     //   email: user.email,
+  //     //   createdAt: user.createdAt,
+  //     // },
+  //     user,
+  //   });
+  // } catch (error) {
+  //   res.json(error);
+  // }
+  const { userId } = req.user;
+  const user = await User.findById(userId);
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
 };
 
 exports.updateInfoUser = async (req, res, next) => {
@@ -98,9 +106,7 @@ exports.updateInfoUser = async (req, res, next) => {
     if (user) {
       user.name = req.body.name || req.body.name;
       user.email = req.body.email || req.body.email;
-      if (user.body.password) {
-        user.password = req.body.password;
-      }
+
       const updateUser = await user.save();
       res.status(200).json({
         _id: updateUser._id,
@@ -142,44 +148,71 @@ exports.updateInfoUser = async (req, res, next) => {
 
 exports.updatePassword = async (req, res, next) => {
   try {
+    // const { userId } = req.user;
+    // console.log("TCL: exports.updatePassword -> userId", userId);
+    // const user = await User.findOne({ _id: userId });
+    // if (user) {
+    //   if (bcrypt.compareSync(req.body.password, user.password)) {
+    //     if (!bcrypt.compareSync(req.body.new_password, user.password)) {
+    //       const hash = await bcrypt.hash(req.body.new_password, 10);
+    //       const newData = await User.findByIdAndUpdate(
+    //         user._id,
+    //         { password: hash },
+    //         { new: true, runValidator: true }
+    //       );
+    //       const token = jwt.sign(
+    //         { userId: newData._id },
+    //         process.env.APP_SECRET
+    //       );
+    //       res.status(200).json({
+    //         status: "success",
+    //         payload: "mật khẩu đổi thành công",
+    //         payload: {
+    //           token,
+    //           email: newData.email,
+    //           userName: newData.username,
+    //         },
+    //       });
+    //     } else {
+    //       res.status(200).json({
+    //         status: "success",
+    //         payload: "mật khẩu cũ và mới trùng nhau",
+    //       });
+    //     }
+    //   } else {
+    //     res.status(200).json({
+    //       status: "success",
+    //       payload: "Mật khẩu không đúng",
+    //     });
+    //   }
+    // }
     const { userId } = req.user;
-    console.log("TCL: exports.updatePassword -> userId", userId);
-    const user = await User.findOne({ _id: userId });
-    if (user) {
-      if (bcrypt.compareSync(req.body.password, user.password)) {
-        if (!bcrypt.compareSync(req.body.new_password, user.password)) {
-          const hash = await bcrypt.hash(req.body.new_password, 10);
-          const newData = await User.findByIdAndUpdate(
-            user._id,
-            { password: hash },
-            { new: true, runValidator: true }
-          );
-          const token = jwt.sign(
-            { userId: newData._id },
-            process.env.APP_SECRET
-          );
-          res.status(200).json({
-            status: "success",
-            payload: "mật khẩu đổi thành công",
-            payload: {
-              token,
-              email: newData.email,
-              userName: newData.username,
-            },
-          });
-        } else {
-          res.status(200).json({
-            status: "success",
-            payload: "mật khẩu cũ và mới trùng nhau",
-          });
-        }
-      } else {
-        res.status(200).json({
-          status: "success",
-          payload: "Mật khẩu không đúng",
-        });
-      }
+    const user = await User.findById(userId).select("+password");
+
+    const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
+
+    if (!isPasswordMatched) {
+      res.status(200).json({
+        status: "success",
+        payload: "Mật khẩu cũ không chính xác",
+      });
     }
+
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      res.status(200).json({
+        status: "success",
+        payload: "Mật khẩu không khớp",
+      });
+    }
+
+    user.password = req.body.newPassword;
+
+    await user.save();
+    res.status(200).json({
+      status: "success",
+      payload: "mật khẩu đổi thành công",
+      user,
+    });
   } catch (error) {
     next(error);
   }
@@ -217,6 +250,7 @@ exports.updateProfile = async (req, res, next) => {
     // res.status(200).json({
     //   status: "success",
     //   token,
+    //   id: user._id,
     //   email: newData.email,
     //   name: newData.name,
     // });

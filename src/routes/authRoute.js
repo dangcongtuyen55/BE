@@ -17,7 +17,7 @@ Router.route("/register").post(register);
 Router.route("/login").post(login);
 Router.route("/").get(checkCurrentUser, getCurrentUser);
 Router.route("/me").get(checkCurrentUser, getInfoUser);
-Router.route("/password/update").post(checkCurrentUser, updatePassword);
+Router.route("/password/update/").post(checkCurrentUser, updatePassword);
 Router.route("/me/update/profile").post(checkCurrentUser, updateProfile);
 // Router.route("/logout").get(logout);
 

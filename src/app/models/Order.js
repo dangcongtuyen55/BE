@@ -85,12 +85,18 @@ const orderSchema = new mongoose.Schema({
     // required: true,
     default: 0,
   },
-  orderStatus: {
-    type: String,
+  isDelivered: {
+    type: Boolean,
     // required: true,
-    default: "Processing",
+    default: false,
+  },
+  isConfirmed: {
+    type: Boolean,
+    // required: true,
+    default: false,
   },
   deliveredAt: Date,
+  confirmedAt: Date,
   createdAt: {
     type: Date,
     default: Date.now,
