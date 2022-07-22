@@ -89,13 +89,20 @@ exports.getInfoUser = async (req, res, next) => {
   // } catch (error) {
   //   res.json(error);
   // }
-  const { userId } = req.user;
-  const user = await User.findById(userId);
-
-  res.status(200).json({
-    success: true,
-    user,
-  });
+  try {
+    const user = await User.findById(req.user._id);
+    res.status(200).json({
+      status: "success",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    res.json(error);
+  }
 };
 
 exports.updateInfoUser = async (req, res, next) => {
@@ -254,6 +261,34 @@ exports.updateProfile = async (req, res, next) => {
     //   email: newData.email,
     //   name: newData.name,
     // });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({}).select("name email role");
+    res.status(200).json({
+      status: "success",
+      result: users.length,
+      users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getDetailUser = async (req, res, next) => {
+  try {
+    // const id = req.params.id;
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    res.status(200).json({
+      success: true,
+      user,
+    });
   } catch (error) {
     next(error);
   }

@@ -24,15 +24,12 @@
     style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #f1f1f1;"
   >
     <h1>Cảm ơn quý khách đã mua hàng của chúng tôi </h1>
-    <h2>Đơn hàng của quý khách gồm có {{itemProduct}} sản phẩm</h2>
-    <h2>Tổng đơn hàng của quý khách là {{Amount}}</h2>
-    <h2>Tổng đơn hàng của quý khách là {{shippingInfo.address}}</h2>
-    <h2>Tổng đơn hàng của quý khách là {{shippingInfo.phone}}</h2>
-    {{#with list}}
-      {{#with this}}
-        name:{{this.name}}
-      {{/with}}
-    {{/with}}
+    <h3>Mã đơn hàng của bạn là:{{orderId}}</h3>
+    <h3>Đơn hàng của quý khách gồm có: {{itemProduct}} sản phẩm</h3>
+    <h3>Tổng đơn hàng của quý khách là: {{Amount}}</h3>
+    <h3>Địa chỉ giao hàng: {{shippingInfo.address}}</h3>
+    <h3>Số điện thoại: {{shippingInfo.phone}}</h3>
+
     <h3>Quý Khách vui lòng đăng nhập vào website:<a
         href="http://localhost:3000/"
       >http://localhost:3000/</a>để kiểm tra đơn hàng.</h3>

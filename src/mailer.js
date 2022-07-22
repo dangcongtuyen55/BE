@@ -72,40 +72,41 @@ const sendMail = (user, subject, orders) => {
     newDataList[i] = orders.orderItems[i];
   }
   console.log("TCL: sendMail -> newDataList", newDataList);
-  // const htmlHead =
-  //   '<table style="width:50%">' +
-  //   '<tr style="border: 1px solid black;"><th style="border: 1px solid black;">Tên Sản Phẩm</th><th style="border: 1px solid black;">Hình Ảnh</th><th style="border: 1px solid black;">Giá</th><th style="border: 1px solid black;">Số Lượng</th><th style="border: 1px solid black;">Thành Tiền</th>';
+  const htmlHead =
+    '<table style="width:50%">' +
+    '<tr style="border: 1px solid black;"><th style="border: 1px solid black;">Tên Sản Phẩm</th><th style="border: 1px solid black;">Hình Ảnh</th><th style="border: 1px solid black;">Giá</th><th style="border: 1px solid black;">Số Lượng</th><th style="border: 1px solid black;">Thành Tiền</th>';
 
-  // let htmlContent = "";
+  let htmlContent = "";
 
-  // for (let i = 0; i < orders.orderItems.length; i++) {
-  //   htmlContent +=
-  //     "<tr>" +
-  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
-  //     orders.orderItems[i].name +
-  //     "</td>" +
-  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;"><img src="' +
-  //     orders.orderItems[i].product_url +
-  //     '" width="80" height="80"></td>' +
-  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
-  //     orders.orderItems[i].price +
-  //     "$</td>" +
-  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
-  //     orders.orderItems[i].quantity +
-  //     "</td>" +
-  //     '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
-  //     parseInt(orders.orderItems[i].price) *
-  //       parseInt(orders.orderItems[i].quantity) +
-  //     "$</td><tr>";
-  // }
-  // console.log(orders.orderItems);
+  for (let i = 0; i < orders.orderItems.length; i++) {
+    htmlContent +=
+      "<tr>" +
+      '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+      orders.orderItems[i].name +
+      "</td>" +
+      '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;"><img src="' +
+      orders.orderItems[i].product_url +
+      '" width="80" height="80"/></td>' +
+      '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+      orders.orderItems[i].price +
+      "$</td>" +
+      '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+      orders.orderItems[i].quantity +
+      "</td>" +
+      '<td style="border: 1px solid black; font-size: 1.2rem; text-align: center;">' +
+      parseInt(orders.orderItems[i].price) *
+        parseInt(orders.orderItems[i].quantity) +
+      "$</td><tr>";
+  }
+  console.log(orders.orderItems);
   const options = {
     from: "tuyendev55@gmail.com",
     to: user.email,
     subject: subject,
     template: "email",
     context: {
-      orderStatus: orders.orderStatus,
+      orderId: orders._id,
+      Amount: orders.Amount,
       itemsPrice: orders.itemsPrice,
       shippingInfo: orders.shippingInfo,
       list: newDataList,

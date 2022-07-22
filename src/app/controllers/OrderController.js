@@ -43,7 +43,7 @@ exports.NewOrder = async (req, res, next) => {
       user: userId,
     });
     const user = await User.findOne({ _id: userId });
-    const subject = "con me may!";
+    const subject = "Xin chào quý khách!";
     await mailer.sendMail(user, subject, orders);
     res.status(200).json({
       status: "success",

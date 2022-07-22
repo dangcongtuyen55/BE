@@ -73,6 +73,15 @@ const productSchema = new mongoose.Schema(
     product_url: {
       type: String,
     },
+    product_url1: {
+      type: String,
+    },
+    product_url2: {
+      type: String,
+    },
+    product_url3: {
+      type: String,
+    },
     numOfReviews: {
       type: Number,
       default: 0,

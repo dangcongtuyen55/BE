@@ -6,7 +6,8 @@ const {
   getInfoUser,
   updatePassword,
   updateProfile,
-  s,
+  getDetailUser,
+  getAllUsers,
   // logout,
 } = require("../app/controllers/authController");
 const { checkCurrentUser } = require("../app/middlewares/checkCurrentUser");
@@ -20,5 +21,6 @@ Router.route("/me").get(checkCurrentUser, getInfoUser);
 Router.route("/password/update/").post(checkCurrentUser, updatePassword);
 Router.route("/me/update/profile").post(checkCurrentUser, updateProfile);
 // Router.route("/logout").get(logout);
-
+Router.route("/user/:id").get(getDetailUser);
+Router.route("/users").get(getAllUsers);
 module.exports = Router;

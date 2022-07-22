@@ -4,7 +4,7 @@ exports.getAllBanners = async (req, res, next) => {
   try {
     const banners = await Banner.find()
       .populate("createBy", "name")
-      .select("title banner_url");
+      .select("title banner_url isDeleted");
     res.status(200).json({
       status: "success",
       results: banners.length,

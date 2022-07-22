@@ -11,7 +11,7 @@ const Features = require("../../utils/Features");
 //new
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const resultPerPage = 20;
+    const resultPerPage = 8;
 
     const productsCount = await Product.countDocuments();
 
@@ -39,12 +39,31 @@ exports.getAllProducts = async (req, res, next) => {
     // res.json(error);
   }
 };
+exports.getAllProductsInSlide = async (req, res, next) => {
+  try {
+    const categories = await Category.find();
+    const products = await Product.find({ isDeleted: false })
+      .select(
+        "_id name category product_url product_url1 product_url2 product_url3 stock numOfReviews rating reviews price description"
+      )
+      .populate("category");
+
+    res.status(200).json({
+      success: true,
+      result: products.length,
+      products,
+    });
+  } catch (error) {
+    next(error);
+    // res.json(error);
+  }
+};
 exports.getAllProductsDisplay = async (req, res, next) => {
   try {
     const products = await Product.find()
-      .populate("createBy", "name")
+      .populate("createBy", "name", "category")
       .select(
-        "name slug price  description rating offer stock reviews createBy product_url createdAt isDeleted"
+        "name slug price  description rating offer stock reviews createBy product_url product_url1 product_url2 product_url3 createdAt isDeleted"
       );
     res.status(200).json({
       status: "success",
@@ -243,6 +262,41 @@ exports.createReview = async (req, res, next) => {
     // } else {
     //   message = "error";
     // }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteAll = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const products = await Product.deleteMany();
+    // console.log("TCL: exports.myOrder -> user", user);
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
+
+exports.initialData = async (req, res, next) => {
+  try {
+    // const id = req.params.id;
+    const categories = await Category.find();
+    const products = await Product.find()
+      .select(
+        "_id name category product_url product_url1 product_url2 product_url3 price description isDeleted"
+      )
+      .populate("category");
+
+    res.status(200).json({
+      success: true,
+
+      products,
+    });
   } catch (error) {
     next(error);
   }

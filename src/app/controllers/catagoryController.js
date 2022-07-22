@@ -32,14 +32,29 @@ exports.createCategory = async (req, res, next) => {
   }
 };
 
+exports.getCategoryDetail = async (req, res, next) => {
+  try {
+    // const id = req.params.id;
+    const { id } = req.params;
+    console.log(id);
+    const category = await Category.findById(id);
+    res.status(200).json({
+      success: true,
+      category,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.updateCategory = async (req, res, next) => {
   try {
-    const { categoryId } = req.params;
+    const { id } = req.params;
     const categories = await Category.findByIdAndUpdate(
-      categoryId,
+      id,
       { ...req.body },
-      { new: true },
-      { runValidator: true }
+
+      { new: true, runValidator: true }
     );
     res.status(200).json({
       status: "success",
